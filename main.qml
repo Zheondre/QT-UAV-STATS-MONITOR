@@ -4,18 +4,18 @@ import QtCharts 2.15
 
 import QtQuick.Controls 2
 
-
+import myspline 1.0
 Window {
-    width: 640
-    height: 480
+    width: 640;  height: 480
     visible: true
     title: qsTr("Hello World")
+    objectName: "plotWindow"
 
     signal addButtonClicked()
-    signal srchSelectSignal(s : string)
+    signal srchSelectSignal(string txt)
     signal editingFinished(s : string)
-    Column {
 
+    Column {
        id: column
         x: 0
         y: 0
@@ -52,13 +52,14 @@ Window {
 
             TextField {
                 id: search
+                objectName: "srch"
                 x: 8
                 y: 63
                 width: 137
                 height: 33
                 horizontalAlignment: Text.AlignHCenter
                 placeholderText: qsTr("Search")
-                //onEditingFinished:
+                onEditingFinished: srchSelectSignal(search.text)
             }
 
             Text {
@@ -79,15 +80,16 @@ Window {
                tickCount: 20
            }
     //allocate SplineSeries array for chartview when needed
-        function addSeries() {
-            sName = mspline.getName(idval)
+        function addSeries(name: string) : string {
+            sName = name
             splinObArry.push(Qt.createQmlObject('SplineSeries{
             id:' +sName+
-                                                'name:'+ sName+
-                                                'axisX:'+axisName+
-                                                'axisY:'+dateTime+
-                                                '}',
-                                                chart,'qmlCreationError.txt'));
+            'name:'+ sName+
+            'axisX:'+axisName+
+            'axisY:'+dateTime+
+            '}',
+            qmlViewChart,"qmlCreationError.txt")
+            );
 
             idVal += 1
             //update graph
@@ -102,9 +104,6 @@ Window {
             name: idVal
             axisX: axisName
         }
-
-
-
     }
 
 

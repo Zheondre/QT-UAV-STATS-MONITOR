@@ -31,6 +31,14 @@ class mySpline : public QObject
     QDateTime m_nextDataTime;
     QValueAxis *m_axis;
 
+
+#if 0
+     vector<int> match;
+    vector<int> selected;
+    vector<int> added;
+
+#endif
+
     qreal m_step;
     qreal m_x;
     qreal m_y;
@@ -45,8 +53,9 @@ public:
     mySpline(QObject* object, QObject *parent);
     virtual ~mySpline();
 
-    void append(QString* Uinput);
     const int sampleSize = 240;
+
+    QString * mySpline::getName(int val);
 
     static const QString m_status[2];
 
@@ -54,7 +63,10 @@ public slots:
     void handleTimeout();
     void updateValues();
     void search(QString);
-    void append();
+    void append(const QString
+                &t);
+    void appendItem();
+    void menuSelect(int pos);
 
 signals:
  void appendCompleted();

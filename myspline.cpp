@@ -22,43 +22,89 @@ mySpline::mySpline(QObject* object, QObject *parent): QObject(parent)
 
     m_timer = new QTimer();
     m_object = object;
+
     // grabs the chart qml object
     m_chart = m_object->findChild<QObject*>("qmlViewChart");
+
     //maybe change this to only update as new radio data comes in
     connect(m_timer, &QTimer::timeout, this, &mySpline::updateValues);
-    //connect(m_object, SIGNAL(srchSelectSignal(QString)),
-     //                 this, SLOT(append(QString)));
-    connect(m_chart, SIGNAL(srchSelectSignal(QString)), this, SLOT(append(QString)));
+    connect(m_object, SIGNAL(srchSelectSignal(QString)), this, SLOT(append(const QString &))); ////TEMP//
     connect(m_object->findChild<QObject*>("addfcItem"), SIGNAL(addButtonClicked()),
-                          this, SLOT(append()));
+                          this, SLOT(appendItem()));
 
-    m_timer->start(1000);
+    //m_timer->start(1000);
 }
 
 mySpline::~mySpline(){}
 
+void mySpline::menuSelect(int pos){
+    /*
+    if(item in matched list clicked) {
 
- void mySpline::search(QString Uinput){
+        selected.push_back(match.at(clicked));
+    }
+    //delete the list and reapply when typing is done
+*/
+}
 
-     /*
-      //
-      */
+void mySpline::search(QString Uinput){
+// pull up list of all matching statsitem
+
+     //TODO go through all lists allocated in app
+     //Fcairstats *fairInst
+   /*
+
+    //go through all names in fairInst->n_names[i]
+    //if there is a partial match place in the ballard item in the plot selection list
+    //highlight items that are clicked on
+
+    for(auto it: airInst->n_names){
+         if(it.contains(uinput))
+            if(!match.contains(it))
+                match.push_back(i);
+         i++;
+         //TODO to push dataType and position
+     }
+
+     */
+
  }
 
- void mySpline::append(){
+ QString *mySpline::getName(int val){
+     return m_names.at(val);
+}
+
+ void mySpline::appendItem(){
 
      //found the stats item we want, append the item or name for testing
      if(testCounter < 2 ){
-    QString *temp = new QString("hello");
-    temp->arg(testCounter);
-     m_names.push_back(temp);
-     emit appendCompleted();
-     QMetaObject::invokeMethod(m_object, "addSeries");
+        QString *temp = new QString("hello");
+        temp->arg(testCounter);
+         m_names.push_back(temp);
+         emit appendCompleted();
+         QMetaObject::invokeMethod(m_chart, "addSeries",
+              Q_ARG(QString, m_status[testCounter])
+           );
+         testCounter++;
      }
+
+    /*
+    for(auto i :selected){
+        if(!add.contains(i)){
+            added.push_back(i*);
+             QMetaObject::invokeMethod(m_chart, "addSeries",
+                  Q_ARG(QString, i->name)
+               );
+            }
+    }
+
+    selected.erase();
+    updateUi();
+    */
+
  }
 
- void mySpline::append(QString
-                       *Uinput){
+ void mySpline::append(const QString &Uinput){
 
      //found the stats item we want, append the item or name for testing
      //m_names.push_back(Uinput);
