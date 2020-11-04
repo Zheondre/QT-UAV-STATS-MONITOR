@@ -22,7 +22,7 @@ class mySpline : public QObject
 {
     Q_OBJECT
 
- //QVector<StatsItem*> ilist;
+    //QVector<StatsItem*> ilist;
 
     QVector<QSplineSeries *> series;
     QVector<QString*> m_names;
@@ -31,9 +31,9 @@ class mySpline : public QObject
     QDateTime m_nextDataTime;
     QValueAxis *m_axis;
 
-
+    bool running;
 #if 0
-     vector<int> match;
+    vector<int> match;
     vector<int> selected;
     vector<int> added;
 
@@ -45,9 +45,9 @@ class mySpline : public QObject
     QStringList m_titles;
 
     QObject* m_object;
-     QObject* m_chart;
+    QObject* m_chart;
 
-   QVector<QPointF> m_data1, m_data2;
+    QVector<QPointF> m_data1, m_data2;
 public:
     explicit mySpline(QObject *parent = nullptr);
     mySpline(QObject* object, QObject *parent);
@@ -57,19 +57,20 @@ public:
 
     QString * mySpline::getName(int val);
 
-    static const QString m_status[2];
+    static const char* example[2];
 
 public slots:
     void handleTimeout();
     void updateValues();
     void search(QString);
-    void append(const QString
-                &t);
+    void append(const QString &t);
+    //void append(const char *t);
     void appendItem();
     void menuSelect(int pos);
+    void startStop();
 
 signals:
- void appendCompleted();
+    void appendCompleted();
 };
 
 #endif // MYSPLINE_H

@@ -6,17 +6,20 @@ import QtQuick.Controls 2
 
 import myspline 1.0
 Window {
-    width: 640;  height: 480
-    visible: true
-    title: qsTr("Hello World")
+    id: pltWindow
     objectName: "plotWindow"
 
-    signal addButtonClicked()
+    width: 640;  height: 480
+    visible: true
+    //title: qsTr("Hello World")
+
+    //signal addButtonClicked()
     signal srchSelectSignal(string txt)
     signal editingFinished(s : string)
+    signal startStop()
 
     Column {
-       id: column
+        id: column
         x: 0
         y: 0
         width: 152
@@ -74,21 +77,20 @@ Window {
             }
         }
 
-            DateTimeAxis {
-               id: dateTime
-               format: "hh:mm:ss"
-               tickCount: 20
-           }
-    //allocate SplineSeries array for chartview when needed
-        function addSeries(name: string) : string {
+        DateTimeAxis {
+            id: dateTime
+            format: "hh:mm:ss"
+            tickCount: 20
+        }
+        //allocate SplineSeries array for chartview when needed
+        function addSeries(name: string) {
             sName = name
-            splinObArry.push(Qt.createQmlObject('SplineSeries{
-            id:' +sName+
-            'name:'+ sName+
+            splinObArry.push(Qt.createQmlObject('import QtCharts 2.15; SplineSeries{
+            name:'+ sName+
             'axisX:'+axisName+
             'axisY:'+dateTime+
             '}',
-            qmlViewChart,"qmlCreationError.txt")
+            pltWindow,"result.qml")
             );
 
             idVal += 1
@@ -98,89 +100,90 @@ Window {
         function deleteASeries(){
         }
 
-
-        SplineSeries{
+/*
+            SplineSeries{
             id: test
             name: idVal
             axisX: axisName
+            }*/
         }
-    }
 
 
-    Button {
-        id: startSop
-        objectName: "startSop"
-        x: 0
-        y: 442
-        width: 152
-        height: 38
-        text: qsTr("Start")
-      //  onClicked:
-    }
+        Button {
+            id: startSop
+            objectName: "startStop"
+            x: 0
+            y: 442
+            width: 152
+            height: 38
+            text: qsTr("Start")
+            signal startStop()
+            onClicked: startStop()
+        }
 
-    Button {
-        id: addfcItem
-        objectName: "addfcItem"
-        x: 0
-        y: 401
-        width: 152
-        height: 38
-        text: qsTr("Add")
-         signal addButtonClicked()
-        onClicked:addButtonClicked()
-    }
+        Button {
+            id: addfcItem
+            objectName: "addfcItem"
+            x: 0
+            y: 401
+            width: 152
+            height: 38
+            text: qsTr("Add")
+            signal addButtonClicked()
+            onClicked:addButtonClicked()
+        }
 
-    ListView {
-        id: listView
-        x: 0
-        y: 103
-        width: 152
-        height: 299
-        delegate: Item {
-            x: 5
-            width: 80
-            height: 40
-            Row {
-                id: row1
-                Rectangle {
-                    width: 40
-                    height: 40
-                    color: colorCode
+        ListView {
+            id: listView
+            x: 0
+            y: 103
+            width: 152
+            height: 299
+            delegate: Item {
+                x: 5
+                width: 80
+                height: 40
+                Row {
+                    id: row1
+                    Rectangle {
+                        width: 40
+                        height: 40
+                        color: colorCode
+                    }
+
+                    Text {
+                        text: name
+                        anchors.verticalCenter: parent.verticalCenter
+                        font.bold: true
+                    }
+                    spacing: 10
+                }
+            }
+            model: ListModel {
+                ListElement {
+                    name: "Grey"
+                    colorCode: "grey"
                 }
 
-                Text {
-                    text: name
-                    anchors.verticalCenter: parent.verticalCenter
-                    font.bold: true
+                ListElement {
+                    name: "Red"
+                    colorCode: "red"
                 }
-                spacing: 10
-            }
-        }
-        model: ListModel {
-            ListElement {
-                name: "Grey"
-                colorCode: "grey"
-            }
 
-            ListElement {
-                name: "Red"
-                colorCode: "red"
-            }
+                ListElement {
+                    name: "Blue"
+                    colorCode: "blue"
+                }
 
-            ListElement {
-                name: "Blue"
-                colorCode: "blue"
-            }
-
-            ListElement {
-                name: "Green"
-                colorCode: "green"
+                ListElement {
+                    name: "Green"
+                    colorCode: "green"
+                }
             }
         }
     }
-}
 
-/*##^##
+    /*##^##
 Designer {
     D{i:0;formeditorZoom:0.6600000262260437}
 }

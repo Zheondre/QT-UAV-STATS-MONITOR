@@ -2,23 +2,22 @@
 #include <QtCharts>
 #include "myspline.h"
 
-const  QString  mySpline::m_status[2] = {
-"testing1",
-"testing2"
+const char *mySpline::example[2] = {
+"testA",
+"TestB"
 };
 
 static int testCounter = 0;
 mySpline::mySpline(QObject *parent): QObject(parent) {}
 
-mySpline::mySpline(QObject* object, QObject *parent): QObject(parent)
+mySpline::mySpline(QObject* object, QObject *parent): QObject(parent), running(false)
 {
 
-    /*  //m_series(0),
+    /*
     m_axis(new QValueAxis),
     m_step(0),
     m_x(5),
     m_y(1)*/
-    //{
 
     m_timer = new QTimer();
     m_object = object;
@@ -30,30 +29,46 @@ mySpline::mySpline(QObject* object, QObject *parent): QObject(parent)
     connect(m_timer, &QTimer::timeout, this, &mySpline::updateValues);
     connect(m_object, SIGNAL(srchSelectSignal(QString)), this, SLOT(append(const QString &))); ////TEMP//
     connect(m_object->findChild<QObject*>("addfcItem"), SIGNAL(addButtonClicked()),
-                          this, SLOT(appendItem()));
+            this, SLOT(appendItem()));
+    //connect(m_object->findChild<QObject*>("startStop"), SIGNAL(startStop()),
+      //      this, SLOT(startStop()));
+    connect(m_object->findChild<QObject*>("startStop"), SIGNAL(startStop()),
+                this, SLOT(startStop()));
 
-    //m_timer->start(1000);
+   m_timer->start(100);
+   m_timer->stop();
+
 }
 
 mySpline::~mySpline(){}
 
-void mySpline::menuSelect(int pos){
-    /*
-    if(item in matched list clicked) {
+void mySpline::startStop(){
 
-        selected.push_back(match.at(clicked));
+    if(running){
+        running = false;
+        //m_object->findChild<QObject*>("startStop")->setProperty("text", "Stop");
+        m_timer->stop();
+    }else {
+        running = true;
+        //m_object->findChild<QObject*>("startStop")->setProperty("text", "Start"); // got an index of out of range error
+        m_timer->start();
     }
-    //delete the list and reapply when typing is done
-*/
+}
+
+void mySpline::menuSelect(int pos){
+    // add index of selected item
+    /*
+     if(!selected.find(pos))
+        selected.push_back(pos);
+     */
 }
 
 void mySpline::search(QString Uinput){
-// pull up list of all matching statsitem
+    // pull up list of all matching statsitem
 
-     //TODO go through all lists allocated in app
-     //Fcairstats *fairInst
-   /*
-
+    //TODO go through all lists allocated in app
+    //Fcairstats *fairInst
+    /*
     //go through all names in fairInst->n_names[i]
     //if there is a partial match place in the ballard item in the plot selection list
     //highlight items that are clicked on
@@ -67,33 +82,31 @@ void mySpline::search(QString Uinput){
      }
 
      */
-
- }
-
- QString *mySpline::getName(int val){
-     return m_names.at(val);
 }
 
- void mySpline::appendItem(){
+QString *mySpline::getName(int val){
+    return m_names.at(val);
+}
 
-     //found the stats item we want, append the item or name for testing
-     if(testCounter < 2 ){
-        QString *temp = new QString("hello");
-        temp->arg(testCounter);
-         m_names.push_back(temp);
-         emit appendCompleted();
-         QMetaObject::invokeMethod(m_chart, "addSeries",
-              Q_ARG(QString, m_status[testCounter])
-           );
-         testCounter++;
-     }
+void mySpline::appendItem(){
+
+    //found the stats item we want, append the item or name for testing
+    if(testCounter < 2 ){
+
+        //emit appendCompleted();
+        QMetaObject::invokeMethod(m_chart, "addSeries",
+          //Q_ARG(QString, m_status[testCounter])
+          Q_ARG(QString, QString(example[testCounter]))
+          );
+        testCounter++;
+    }
 
     /*
     for(auto i :selected){
         if(!add.contains(i)){
             added.push_back(i*);
              QMetaObject::invokeMethod(m_chart, "addSeries",
-                  Q_ARG(QString, i->name)
+                  Q_ARG(const char*, i->name)
                );
             }
     }
@@ -102,16 +115,16 @@ void mySpline::search(QString Uinput){
     updateUi();
     */
 
- }
+}
 
- void mySpline::append(const QString &Uinput){
+void mySpline::append(const QString & Uinput){
 
-     //found the stats item we want, append the item or name for testing
-     //m_names.push_back(Uinput);
-     //emit appendCompleted();
-     QMetaObject::invokeMethod(m_object, "addSeries");
- }
- /*
+    //found the stats item we want, append the item or name for testing
+    //m_names.push_back(Uinput);
+    //emit appendCompleted();
+    QMetaObject::invokeMethod(m_object, "addSeries");
+}
+/*
  popSeries()
  */
 void mySpline::updateValues(){
@@ -127,7 +140,8 @@ void mySpline::updateValues(){
         int i = 0;
         for (QSplineSeries *it : series){
             //looks for the names of each spline and update data
-            QMetaObject::invokeMethod(m_chart,(char*)m_names.at(i), Qt::AutoConnection, Q_RETURN_ARG(QSplineSeries*, it), Q_ARG(int, i));
+            //QMetaObject::invokeMethod(m_chart,(char*)m_names.at(i), Qt::AutoConnection, Q_RETURN_ARG(QSplineSeries*, it), Q_ARG(int, i));
+            QMetaObject::invokeMethod(m_chart,example[i], Qt::AutoConnection, Q_RETURN_ARG(QSplineSeries*, it), Q_ARG(int, i));
             i++;
         }
         //Cast the series and axis to proper form
