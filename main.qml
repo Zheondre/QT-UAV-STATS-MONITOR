@@ -14,18 +14,9 @@ Window {
     //title: qsTr("Hello World")
 
     //signal addButtonClicked()
-    signal srchSelectSignal(string txt)
+    signal srchEditSignal(string txt)
     signal editingFinished(s : string)
     signal startStop()
-
-    Column {
-        id: column
-        x: 0
-        y: 0
-        width: 152
-        height: 480
-        visible: false
-    }
 
     ChartView{
         id: qmlViewChart
@@ -43,39 +34,9 @@ Window {
         property var axisName: ""
 
         property var splinObArry: []
+
+        property  var temp:
         //How do we let qchartview know about the spline array ?
-
-        Rectangle {
-            id: rectangle
-            x: -152
-            y: 0
-            width: 153
-            height: 480
-            color: "#faf9f9"
-
-            TextField {
-                id: search
-                objectName: "srch"
-                x: 8
-                y: 63
-                width: 137
-                height: 33
-                horizontalAlignment: Text.AlignHCenter
-                placeholderText: qsTr("Search")
-                onEditingFinished: srchSelectSignal(search.text)
-            }
-
-            Text {
-                id: element
-                x: 35
-                y: 26
-                width: 83
-                height: 24
-                color: "#e73a3a"
-                text: qsTr("Honeywell")
-                font.pixelSize: 18
-            }
-        }
 
         DateTimeAxis {
             id: dateTime
@@ -84,30 +45,63 @@ Window {
         }
         //allocate SplineSeries array for chartview when needed
         function addSeries(name: string) {
-            sName = name
-            splinObArry.push(Qt.createQmlObject('import QtCharts 2.15; SplineSeries{
-            name:'+ sName+
-            'axisX:'+axisName+
-            'axisY:'+dateTime+
-            '}',
-            pltWindow,"result.qml")
-            );
+            temp = Qt.createQmlObject('import QtCharts 2.15; SplineSeries{}',
+            qmlViewChart)
 
-            idVal += 1
+            //temp.id =;
+            temp.name = name;
+            temp.axisX = dateTime;
+            //temp.axisY = ;
+
+            splinObArry.push(temp)
+            //qmlViewChart.addSeries()
             //update graph
         }
 
         function deleteASeries(){
         }
 
-/*
+            /*
             SplineSeries{
             id: test
             name: idVal
             axisX: axisName
-            }*/
+            }
+            */
         }
 
+
+    Rectangle {
+        id: rectangle
+        x: 0
+        y: 0
+        width: 152
+        height: 480
+        color: "#faf9f9"
+
+        TextField {
+            id: search
+            objectName: "srch"
+            x: 8
+            y: 63
+            width: 137
+            height: 33
+            horizontalAlignment: Text.AlignHCenter
+            placeholderText: qsTr("Search")
+            onEditingFinished: srchEditSignal(search.text)
+        }
+
+        Text {
+            id: element
+            x: 35
+            y: 26
+            width: 83
+            height: 24
+            color: "#e73a3a"
+            text: qsTr("Honeywell")
+            font.pixelSize: 18
+        }
+    }
 
         Button {
             id: startSop

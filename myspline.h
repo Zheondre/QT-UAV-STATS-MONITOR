@@ -25,8 +25,7 @@ class mySpline : public QObject
     //QVector<StatsItem*> ilist;
 
     QVector<QSplineSeries *> series;
-    QVector<QString*> m_names;
-    //QVector<QString> m_names;
+
     QTimer *m_timer;
     QDateTime m_nextDataTime;
     QValueAxis *m_axis;
@@ -54,16 +53,12 @@ public:
     virtual ~mySpline();
 
     const int sampleSize = 240;
-
-    QString * mySpline::getName(int val);
-
     static const char* example[2];
 
 public slots:
     void handleTimeout();
     void updateValues();
-    void search(QString);
-    void append(const QString &t);
+    void search(const QString &Uinput);
     //void append(const char *t);
     void appendItem();
     void menuSelect(int pos);

@@ -3,8 +3,8 @@
 #include "myspline.h"
 
 const char *mySpline::example[2] = {
-"testA",
-"TestB"
+"test_A",
+"Test_B"
 };
 
 static int testCounter = 0;
@@ -12,13 +12,14 @@ mySpline::mySpline(QObject *parent): QObject(parent) {}
 
 mySpline::mySpline(QObject* object, QObject *parent): QObject(parent), running(false)
 {
-
     /*
     m_axis(new QValueAxis),
     m_step(0),
     m_x(5),
     m_y(1)*/
-
+// test ///
+  series.resize(2);
+//TEST ////
     m_timer = new QTimer();
     m_object = object;
 
@@ -27,17 +28,14 @@ mySpline::mySpline(QObject* object, QObject *parent): QObject(parent), running(f
 
     //maybe change this to only update as new radio data comes in
     connect(m_timer, &QTimer::timeout, this, &mySpline::updateValues);
-    connect(m_object, SIGNAL(srchSelectSignal(QString)), this, SLOT(append(const QString &))); ////TEMP//
+    connect(m_object, SIGNAL(srchEditSignal(QString)), this, SLOT(search(const QString &)));
     connect(m_object->findChild<QObject*>("addfcItem"), SIGNAL(addButtonClicked()),
             this, SLOT(appendItem()));
-    //connect(m_object->findChild<QObject*>("startStop"), SIGNAL(startStop()),
-      //      this, SLOT(startStop()));
     connect(m_object->findChild<QObject*>("startStop"), SIGNAL(startStop()),
                 this, SLOT(startStop()));
 
    m_timer->start(100);
    m_timer->stop();
-
 }
 
 mySpline::~mySpline(){}
@@ -58,12 +56,12 @@ void mySpline::startStop(){
 void mySpline::menuSelect(int pos){
     // add index of selected item
     /*
-     if(!selected.find(pos))
-        selected.push_back(pos);
+     if(!selected.find(match.at(pos))
+        selected.push_back(match.at(pos));
      */
 }
 
-void mySpline::search(QString Uinput){
+void mySpline::search(const QString &Uinput){
     // pull up list of all matching statsitem
 
     //TODO go through all lists allocated in app
@@ -80,12 +78,7 @@ void mySpline::search(QString Uinput){
          i++;
          //TODO to push dataType and position
      }
-
      */
-}
-
-QString *mySpline::getName(int val){
-    return m_names.at(val);
 }
 
 void mySpline::appendItem(){
@@ -103,27 +96,23 @@ void mySpline::appendItem(){
 
     /*
     for(auto i :selected){
-        if(!add.contains(i)){
+        if(!added.contains(i)){
             added.push_back(i*);
              QMetaObject::invokeMethod(m_chart, "addSeries",
-                  Q_ARG(const char*, i->name)
+                  Q_ARG(QString, QString(i->name))
                );
             }
     }
 
+    //resize series vector
     selected.erase();
+    added.erase();
+    match.erase();
+    //clear search text
     updateUi();
     */
-
 }
 
-void mySpline::append(const QString & Uinput){
-
-    //found the stats item we want, append the item or name for testing
-    //m_names.push_back(Uinput);
-    //emit appendCompleted();
-    QMetaObject::invokeMethod(m_object, "addSeries");
-}
 /*
  popSeries()
  */
@@ -155,7 +144,7 @@ void mySpline::updateValues(){
         //i++;
         // }
         //test
-        series.at(0)->replace(m_data1);
+        series.at(0)->replace(m_data1); //crashes
         series.at(1)->replace(m_data2);
 
         //set the new values to series and axises
