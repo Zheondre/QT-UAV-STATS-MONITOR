@@ -1,0 +1,21 @@
+<RCC>
+    <qresource prefix="/">
+        <file>main.qml</file>
+        <file>Page1Form.ui.qml</file>
+        <file>Page2Form.ui.qml</file>
+        <file>Page3Form.ui.qml</file>
+        <file>Page4Form.ui.qml</file>
+        <file>UtilsForm.ui.qml</file>
+        <file>utilsModel.qml</file>
+        <file>images/error-2-32.ico</file>
+        <file>images/graph-32.ico</file>
+        <file>images/home-7-32.ico</file>
+        <file>images/list.jpg</file>
+        <file>images/star-4-32.ico</file>
+        <file>images/list-2-24.ico</file>
+        <file>images/menu-4-24.ico</file>
+        <file>images/i-o.png</file>
+        <file>Favs.qml</file>
+        <file>FavsForm.ui.qml</file>
+    </qresource>
+</RCC>
