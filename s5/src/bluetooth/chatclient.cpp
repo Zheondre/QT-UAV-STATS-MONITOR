@@ -51,9 +51,10 @@
 #include "chatclient.h"
 
 #include <QtCore/qmetaobject.h>
+#include <regex>
 
 ChatClient::ChatClient(QObject *parent)
-    :   QObject(parent)
+    :   QThread(parent)
 {
 }
 
@@ -100,9 +101,51 @@ void ChatClient::readSocket()
 
     while (socket->canReadLine()) {
         QByteArray line = socket->readLine();
-        emit messageReceived(socket->peerName(),
-                             QString::fromUtf8(line.constData(), line.length()));
-    }
+
+        QString result =  QString::fromUtf8(line.constData(), line.length());
+        QStringList sArgs = result.split(",");
+
+         if (sArgs[0] == "$PSBGD") {
+
+         } else if (sArgs[0] == "$PCRL") {
+
+             if (sArgs[1] == "$RWSSTA") {
+
+                 /*
+                 case "RWSSTA":
+                     if (m_bLogUdpRws)
+                     {
+                         Rws.RwsStats s = Rws.RwsStats.deserialize(Result);
+                         this.Invoke((Action)delegate
+                         {
+                             ZedGraphInterface.AddStats(s);
+                         });
+                     }
+                     break;*/
+
+             }else if (sArgs[1] == "$FCAIRSTA") {
+                    //check if fcstats exists ?
+                    emit inbox(result);
+                 break;
+             }
+             else if (sArgs[1] == "$FCAIRDIAG") {
+                 /*
+                 if (m_bLogUdpFcDiags)
+                 {
+                     FcAir.FcAirDiags s = FcAir.FcAirDiags.deserialize(Result);
+                     this.Invoke((Action)delegate
+                     {
+                         ZedGraphInterface.AddStats(s);
+                     });
+                 }
+                 */
+             }
+         }
+
+        }
+
+       // emit messageReceived(socket->peerName(),
+         //QString::fromUtf8(line.constData(), line.length()));
 }
 //! [readSocket]
 

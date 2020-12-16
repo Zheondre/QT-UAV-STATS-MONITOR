@@ -1,7 +1,7 @@
 #ifndef FCAIRSTATS_H
 #define FCAIRSTATS_H
 
-#include "C:\Source\QT\s5\basestats.h"
+#include "C:\Source\QT\QT GIT REPO\s5\basestats.h"
 
 class FcAirStats : public BaseStats
 {
@@ -67,7 +67,22 @@ public:
 
       NumShortStats,
    };
+
+
+    /*
+    static statsEntry{
+
+     static QString name[];
+     static QString Command[];
+     static QString Unit;
+     int scale;
+
+    };
+*/
+
+    //TODO COMBINE THE 4 ARRAY BELLOW IN A STRUCT
     static const QString m_Names[NumShortStats];
+    static const QString m_FcCommands[NumShortStats];
     static const QString m_Units[NumShortStats];
     //static const constexpr char* const m_Units[46] ;
 
@@ -125,6 +140,8 @@ public:
     };
 
      FcAirStats();
+
+     void deserialize(QString Data);
 
      QString getName(int idx) const;
      QString getUnit(int idx) const;

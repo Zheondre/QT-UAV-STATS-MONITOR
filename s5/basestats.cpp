@@ -1,26 +1,33 @@
 #include "basestats.h"
 
-BaseStats::BaseStats(QObject *parent) : QObject(parent), m_Type(Custom), m_pfavList(NULL){
-}
-
-BaseStats::BaseStats(StatsType type) : QObject(nullptr), m_Type(type), m_pfavList(NULL)
-{}
-
+/*
 BaseStats::BaseStats(StatsType type,BaseStats* fl) : QObject(nullptr), m_Type(type), m_pfavList(fl)
 {
      connect(this,SIGNAL(favChanged(StatsItem *obj, int rowIndex)),
     m_pfavList,SLOT(addFavorite(StatsItem *obj, int rowIndex)));
+}
+*/
+
+QVector<StatsItem*> BaseStats::m_pfavList; //make this a hash map instead ?
+
+BaseStats::BaseStats(QObject *parent) : QObject(parent), m_Type(Custom){
+}
+
+BaseStats::BaseStats(StatsType type) : QObject(nullptr), m_Type(type)
+{
+    //connect(this,SIGNAL(favChanged(StatsItem *obj, int rowIndex)),
+   //m_pfavList,SLOT(addFavorite(StatsItem *obj, int rowIndex)));
 
 }
 
+
 QVector<StatsItem*> BaseStats::getStatItems(){ return mItems; }
 
-
 void BaseStats::updateFavList(StatsItem *obj, int rowIndex){
-    if(obj->m_bFav)
+    if(obj->m_bFav){
         if(!mItems.contains(obj))
             mItems.append(obj);
-    else
+    }else
         if(mItems.contains(obj)){
             //if custom update front end
             //emit preItemRemove
@@ -40,12 +47,138 @@ BaseStats::StatsType BaseStats::getStatsType() const
 {
     return mItems.size();
 }
-/*
+//#ifdef TRUE
+
+  /*
   double BaseStats::getValue(int item)
 {
     return mItem.at(item).m_sValue;
 }
 */
+//#ifdef true
+ int BaseStats::getFavValue(int idx) const
+{
+      if(m_pfavList.size() > idx)
+         return m_pfavList.at(idx)->m_nValue;
+      else
+         return -1;
+}
+
+  QString BaseStats::getFavName(int idx) const
+{
+    if(m_pfavList.size() > idx)
+        return m_pfavList.at(idx)->m_sName;
+    else
+        return "items ERROR";
+}
+
+  QString BaseStats::getFavUnit(int idx) const
+{
+    if(m_pfavList.size() > idx)
+        return m_pfavList.at(idx)->m_sUnit;
+    else
+        return "Index ERROR";
+}
+
+/*
+void BaseStats::setValue(const int val, int idx, QVector<StatsItem *> &items)
+{
+    items.at(idx)->m_nValue = val;
+    emit dataChanged(idx,FCSTAT_VALUE);
+}
+*/
+
+
+void BaseStats::setFavInput(const QString &val, int idx){
+
+    if(m_pfavList.at(idx)->m_bForce){
+        if(m_pfavList.at(idx)->m_sInput != val){
+            m_pfavList.at(idx)->m_sInput = val;
+         //send message out to the world about the update
+        }
+    }
+}
+
+bool BaseStats::getFavFav(int idx) const
+{
+    if(m_pfavList.size() > idx)
+        return m_pfavList.at(idx)->m_bFav;
+    else
+        return false;
+}
+
+
+bool BaseStats::getFavForce(int idx) const
+{
+    if(m_pfavList.size() > idx)
+        return m_pfavList.at(idx)->m_bForce;
+    else
+        return false;
+
+}
+bool BaseStats::getFavPlot(int idx) const
+{
+    if(m_pfavList.size() > idx)
+        return m_pfavList.at(idx)->m_bPlot;
+    else
+        return false;
+}
+
+
+void BaseStats::setFavFav(bool val, int idx)
+{//fav list only show items that are selected
+    if(m_pfavList.size() > idx){
+      m_pfavList.at(idx)->m_bFav = val;
+
+      int j = 0, l = 0;
+
+      for(auto i: m_pfavList){
+          if(i == m_pfavList.at(j)){
+
+              for(auto k: mItems){
+               if(i == k)
+                   break;
+                j++;
+              }
+
+             // emit preItemRemove();
+
+              m_pfavList.remove(l);
+                break;
+
+             // emit postItemRemove();
+          }
+          l++;
+      }
+
+      emit dataChanged( j, FCSTAT_FAV);
+    }
+
+}
+void BaseStats::setFavForce(bool val, int idx)
+{
+    if(m_pfavList.size() > idx)
+        m_pfavList.at(idx)-> m_bForce = val;
+}
+void BaseStats::setFavPlot(bool val, int idx)
+{
+    if(m_pfavList.size() > idx)
+        m_pfavList.at(idx)->m_bPlot = val;
+}
+// have worker thread call function bellow
+
+void BaseStats::setFavValue(const int val, bool update, int idx)
+{
+    if(m_pfavList.size() > idx){
+        if(m_pfavList.at(idx)->m_nValue != val){
+          m_pfavList.at(idx)->m_nValue = val;
+          if(update)
+            emit dataChanged(idx,FCSTAT_VALUE);
+        }
+    }
+}
+
+//#endif
   int BaseStats::getValue(int idx) const
 {
       if(mItems.size() > idx)
@@ -103,6 +236,8 @@ bool BaseStats::getFav(int idx) const
     else
         return false;
 }
+
+
 bool BaseStats::getForce(int idx) const
 {
     if(mItems.size() > idx)
@@ -123,7 +258,30 @@ void BaseStats::setFav(bool val, int idx)
 {
     if(mItems.size() > idx){
       mItems.at(idx)->m_bFav = val;
-      emit favChanged(this, idx, val);
+
+      if(mItems.at(idx)->m_bFav){
+          if(!m_pfavList.contains(mItems.at(idx ))){
+              //emit preItemAppend();
+              m_pfavList.append(mItems.at(idx));
+              //emit postItemAppend();
+            //emit favChanged(m_pfavList.size());
+          }
+      }else
+          if(m_pfavList.contains(mItems.at(idx))){
+              int j  =0;
+              for(auto i: m_pfavList){
+                  if(i == m_pfavList.at(j)){
+                      //emit postItemRemoved()
+                      m_pfavList.remove(j);
+                      //emit postItemRemoved();
+                        break;
+                  }
+                   j++;
+              }
+
+          }
+       //emit favchanged(t/f, idx );
+      //emit favChanged(this, idx, val);
     }
 
 }
@@ -155,117 +313,3 @@ void BaseStats::setValue(const int val, bool update, int idx)
 /*int BaseStats::getTickCount(){return 0;}*/
 
 int BaseStats::getSystemUptime(){  return 0;}
-/*
- BaseStats BaseStats::factory(BaseStats::StatsType typ)
-{
-    switch (typ)
-    {
-        case StatsType::Sofc:
-            {
-               // SofcStats s = new SofcStats();
-                return s;
-            }
-    case StatsType::Rws:
-            {
-                Rws.RwsStats s = new Rws.RwsStats();
-                return s;
-            }
-    case StatsType::FcAir:
-            {
-                FcAir::FcAirStats s = new FcAir.FcAirStats();
-                return s;
-            }
-    case StatsType::BMS:
-            {
-                Bms.BmsStats s = new Bms.BmsStats();
-                return s;
-            }
-    case StatsType::FcDiags:
-            {
-                FcAir.FcAirDiags s = new FcAir.FcAirDiags();
-                return s;
-            }
-    }
-
-
-    return ;
-}
-*/
-/*
- int BaseStats::GetNumStats(BaseStats::StatsType typ)
-{
-    BaseStats a = factory(typ);
-    return a.getNumStats();
-}
-
-StatsItem[] BaseStats::GetStatsItems()
-{
-    // use this to enable what works here
-    //
-    if (s_bIncludeFcAir)
-    {
-        StatsItem[] s = new StatsItem[5];
-        s[0] = new StatsItem(BaseStats.StatsType.Sofc, "Sofc");
-        s[1] = new StatsItem(BaseStats.StatsType.Rws, "Rws");
-        s[2] = new StatsItem(BaseStats.StatsType.BMS, "Bms");
-        s[3] = new StatsItem(BaseStats.StatsType.FcAir, "FcAir");
-        s[4] = new StatsItem(BaseStats.StatsType.FcDiags, "FcDiags");
-
-        return s;
-    }
-    else
-    {
-        StatsItem[] s = new StatsItem[1];
-        s[0] = new StatsItem(BaseStats.StatsType.Sofc, "Sofc");
-        return s;
-    }
-}
-GraphItem[] BaseStats::GetGraphItems()
-{
-    int cnt = 0;
-    StatsItem[] its = GetStatsItems();
-    for (int i = 0; i < its.Length; i++)
-    {
-        BaseStats a = factory(its[i].m_Type);
-        cnt += a.getNumStats();
-    }
-
-    GraphItem[] Items = new GraphItem[cnt];
-
-    int outcnt = 0;
-
-    for (int i = 0; i < its.Length; i++)
-    {
-        BaseStats a = factory(its[i].m_Type);
-        for (int k = 0; k < a.getNumStats(); k++)
-        {
-            Items[outcnt++] = new GraphItem(its[i].m_Type, k);
-        }
-    }
-
-    return Items;
-}
-
-public static int GetNumStats(BaseStats.StatsType typ)
-{
-    BaseStats a = factory(typ);
-    return a.getNumStats();
-}
-
-*
-    static String GetLabelFromGraphItem(GraphItem item)
-   {
-       BaseStats s = factory(item.m_Type);
-       if (s != null)
-           return s.getStatLabel(item.m_DataIndex);
-       return "???";
-   }
-
-   public static String GetUnitsFromGraphItem(GraphItem item)
-   {
-       BaseStats s = factory(item.m_Type);
-       if (s != null)
-           return s.getUnitsLabel(item.m_DataIndex);
-       return "???";
-   }
-   */

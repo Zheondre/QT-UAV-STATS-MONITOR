@@ -65,13 +65,13 @@ Window {
         function deleteASeries(){
         }
 
-        /*
+
         SplineSeries{
         id: test
         name: idVal
         axisX: dt // this works but is null when setting the time series on dynamic spline series
         }
-        */
+
 
         }
 

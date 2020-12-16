@@ -1,5 +1,62 @@
 #include "fcairstats.h"
 
+/*
+static const FcAirStats::statsEntry[] = {
+
+    "CalTime",
+    "UpTime",
+
+    "FuelCellState",
+    "Load_I",
+    "HybrdBusV",
+    "Converter_I",
+    "DC1_I",
+    "DC2_I",
+    "DC3_I",
+    "CpuTemp",
+    "Cnvrtr_T1",
+    "Cnvrtr_T2",
+    "Cnvrtr_T3",
+    "Bat_V",
+    "Bat_In_I",
+    "Bat_Out_I",
+    "Supply18V",
+    "Supply18I",
+    "Amb_T",
+    "StatErrrMsk",
+    "StatsWrningMsk",
+    "TankPsi",
+    "H2MassRemaining",
+    "TimeRemaining",
+
+    "Stk1_FC_V",	// 100ths
+    "Stk1_FC_I",
+    "Stk1_H2_Psi",
+    "Stk1BallastPsi",
+    "Stk1_Cool_Out_T",
+    "Stk1SurfaceTemp",
+    "Stk1AirBlowerDriveSignal",
+    "Stk1BypassDriveSignal",
+    "Stk1StateMachineStatus",
+    "Stk1ErrMsk",
+    "Stk1WrngMsk",
+
+    "Stk2FuelCellVoltage",	// 100ths
+    "Stk2FuelCellCurrent",
+    "Stk2HydrogenPressure",
+    "Stk2BallastPressure",
+    "Stk2CoolantOutputTemp",
+    "Stk2StackSurfaceTemp",
+    "Stk2AirBlowerDriveSignal",
+    "Stk2BypassDriveSignal",
+    "Stk2StateMachineStatus",
+    "Stk2ErrorMask",
+    "Stk2WarningMask"
+
+}
+
+
+*/
 const QString FcAirStats::m_Names [NumShortStats] ={
     "CalTime",
     "UpTime",
@@ -53,12 +110,23 @@ const QString FcAirStats::m_Names [NumShortStats] ={
 
 };
 
+/*
+const QString FcAirStats::m_FcCommands[NumShortStats] = {
+
+
+Dc1Isns,
+Dc2Isns,
+Dc3Isns,
+CPUTsns,
+
+};
+*/
 const QString FcAirStats::m_Units[NumShortStats] =
 {
    "sec",  //CalendarTime
    "sec",  //UpTime
 
-   "",  //FuelCellState,
+   " ",  //FuelCellState,
    "A",  //LoadCurrent,
    "V",  //HybridBusVoltage,
    "A",  //ConverterCurrent,
@@ -75,8 +143,8 @@ const QString FcAirStats::m_Units[NumShortStats] =
    "V",  //Supply18Voltage,
    "A",  //Supply18Current,
    "C",  //AmbientTemperature,
-   "",  //StatusErrorMask,
-   "",  //StatusWarningMask,
+   " ",  //StatusErrorMask,
+   " ",  //StatusWarningMask,
    "psi",//TankPsi,
    "g",//H2MassRemaining,
    "min",//TimeRemaining,
@@ -89,9 +157,9 @@ const QString FcAirStats::m_Units[NumShortStats] =
    "C",  //Stk1StackSurfaceTemp,
    "%",  //Stk1AirBlowerDriveSignal,
    "%",  //Stk1BypassDriveSignal,
-   "",  //Stk1StateMachineStatus,
-   "",  //Stk1ErrorMask,
-   "",  //Stk1WarningMask,
+   " ",  //Stk1StateMachineStatus,
+   " ",  //Stk1ErrorMask,
+   " ",  //Stk1WarningMask,
 
    "V",  //Stk2FuelCellVoltage,	// 100ths
    "A",  //Stk2FuelCellCurrent,
@@ -101,9 +169,9 @@ const QString FcAirStats::m_Units[NumShortStats] =
    "C",  //Stk2StackSurfaceTemp,
    "%",  //Stk2AirBlowerDriveSignal,
    "%",  //Stk2BypassDriveSignal,
-   "",  //Stk2StateMachineStatus,
-   "",  //Stk2ErrorMask,
-   "",  //Stk2WarningMask,
+   " ",  //Stk2StateMachineStatus,
+   " ",  //Stk2ErrorMask,
+   " ",  //Stk2WarningMask,
 };
 
 FcAirStats::FcAirStats()
@@ -117,11 +185,45 @@ FcAirStats::FcAirStats()
     }
 }
 
+
+void FcAirStats::deserialize(QString Data){
+
+    char sDelim = { '*' };
+     QStringList sNoCs = Data.split(sDelim);
+
+     char sDelim2 = { ',' };
+     QStringList sArgs = sNoCs[0].split(sDelim2);
+     int nSkip = 5;
+     double nVal;
+     int nStatsSkip = 2;
+
+     for (int i = nSkip; i < sArgs.size(); i++)
+     {
+         nVal = 0;
+         //try
+         //{
+             if (sArgs[i] != "")
+                 nVal = sArgs[i].toDouble();
+         //}
+        // catch { }
+
+         mItems[i - nSkip + nStatsSkip]->m_nValue = (int)(nVal * (double)m_Scale[i - nSkip + nStatsSkip]);
+         if (i - nSkip + nStatsSkip + 1 >= NumShortStats)
+             break;
+     }
+     //emit conversioComplete();
+}
 QString FcAirStats::getName(int idx) const{
-    return m_Names[idx];
+      if((mItems.size() > idx) && (idx >= 0)){
+        return m_Names[idx];
+      }
+    return QString("%"); // crashes
 }
 QString FcAirStats::getUnit(int idx) const{
-    return m_Units[idx];
+    if((mItems.size() > idx) && (idx >= 0)){
+        return m_Units[idx];
+    }
+    return QString(" ");
 }
 
 void FcAirStats::setFav(bool val, int idx)
@@ -148,10 +250,10 @@ void FcAirStats::setPlot(bool val, int idx)
 {
     if(mItems.size() > idx){
         mItems.at(idx)->m_bPlot = val;
-        if(mItems.at(idx)->m_bPlot)
-          emit graphAdded(this,idx);
-        else
-          emit graphRemoved(this,idx);
+        //if(mItems.at(idx)->m_bPlot)  //crashes
+          //emit graphAdded(this,idx);
+        //else
+         // emit graphRemoved(this,idx);
     }
 }
 

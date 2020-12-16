@@ -12,6 +12,7 @@ class statsModel : public QAbstractListModel
     //Q_PROPERTY(StatsList *list READ getList WRITE setList)
     Q_PROPERTY(BaseStats *list READ getList WRITE setList)
 
+protected:
     BaseStats *m_pList;
 
 public:
@@ -41,7 +42,7 @@ public:
     virtual QHash<int, QByteArray> roleNames() const override;
 
     BaseStats *getList() const;
-    void setList(BaseStats *list);
+    virtual void setList(BaseStats *list);
 
     public slots:
         void update(const int, const int);

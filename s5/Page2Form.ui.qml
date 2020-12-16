@@ -3,9 +3,9 @@ import QtQuick.Controls 2.15
 import QtQuick.Layouts 1.1
 
 import StatsMdl 1.0
+
 //import StatsLst 1.0
 import fcairsts 1.0
-
 Page {
     id: page
     width: applicationWindow.width
@@ -227,9 +227,5 @@ Page {
     }
 }
 
-/*##^##
-Designer {
-    D{i:0;autoSize:true;height:480;width:640}
-}
-##^##*/
+
 

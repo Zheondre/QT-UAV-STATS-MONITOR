@@ -2,8 +2,6 @@
 #include <QDebug>
 
 #include "statsModel.h"
-//#include "C:\Source\QT\s5\src\FcAir\fcairstats.h"
-
 
 statsModel::statsModel(QObject *parent)
     : QAbstractListModel(parent)\
@@ -35,23 +33,24 @@ QVariant statsModel::data(const QModelIndex &index, int role) const
   switch(role){
     case FCSTAT_FAV:
         return QVariant(m_pList->getFav(index.row()));
+        //emit favDataChanged();
     case FCSTAT_PLOT:
         return QVariant(m_pList->getPlot(index.row()));
     case FCSTAT_NAME:
         return QVariant(m_pList->getName(index.row()));
     case FCSTAT_VALUE:{
-      int temp;
+        int temp;
          //return QVariant(m_pList->getValue(index.row()));
 
-    temp = m_pList->getValue(index.row());
-    return QVariant(temp);
+        temp = m_pList->getValue(index.row());
+        return QVariant(temp);
   }
     case FCSTAT_UNIT:
-         return QVariant(m_pList->getUnit(index.row()));
+       return QVariant(m_pList->getUnit(index.row()));
     case FCSTAT_FORCE:
         return QVariant(m_pList->getForce(index.row()));
     //case FCSTAT_UINPUT:
-   //      return QVariant(item.getInput());
+        //return QVariant(item.getInput());
     }
     return QVariant();
 }
@@ -149,21 +148,7 @@ void statsModel::setList(BaseStats *list){
     if(m_pList){
        //load model list data change notification connections
        connect(m_pList, SIGNAL(dataChanged(const int,const int)), this, SLOT(update(const int, const int)));
-
-/*
-       connect(m_pList, &BaseStats::preItemAppended, this, [=](){
-       const int index = m_pList->getNumStats();
-       beginInsertRows(QModelIndex(), index, index);
-       });
-
-       connect(m_pList, &BaseStats::postItemAppended, this, [=](){
-        endInsertRows();
-        });
-*/
-
-
     }
 
     endResetModel();
 }
-

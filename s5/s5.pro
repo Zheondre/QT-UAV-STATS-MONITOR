@@ -20,14 +20,15 @@ DEFINES += QT_DEPRECATED_WARNINGS
 #DEFINES += QT_DISABLE_DEPRECATED_BEFORE=0x060000    # disables all the APIs deprecated before Qt 6.0.0
 
 SOURCES += \
-        basestats.cpp \
         main.cpp \
+        basestats.cpp \
         src/FcAir/fcairstats.cpp \
         src/bluetooth/bluetooth.cpp \
         src/bluetooth/chatclient.cpp \
         src/bluetooth/chatserver.cpp \
-        src/bluetooth/remoteselector.cpp \
-        src/statsModel.cpp
+        src/bluetooth/remoteselector.cpp \ 
+        src/statsModel.cpp \
+        src/favstatsmodel.cpp
 
 RESOURCES += qml.qrc
 
@@ -49,13 +50,8 @@ HEADERS += \
     src/bluetooth/chatclient.h \
     src/bluetooth/chatserver.h \
     src/bluetooth/remoteselector.h \
-    src/realtimedemo/ChartViewer.h \
-    src/realtimedemo/realtimedemo.h \
-    src/realtimedemo/realtimedemo.rc \
-    src/realtimedemo/realtimedemoDlg.h \
-    src/realtimedemo/resource.h \
-    src/realtimedemo/stdafx.h \
-    src/statsModel.h
+    src/statsModel.h \
+    src/favstatsmodel.h
 
 SUBDIRS += \
     src/bluetooth/btchat.pro
@@ -68,8 +64,6 @@ DISTFILES += \
     src/bluetooth/CMakeLists.txt \
     src/bluetooth/doc/images/btchat-example.png \
     src/bluetooth/doc/src/btchat.qdoc \
-    src/realtimedemo/res/freezePB.ico \
-    src/realtimedemo/res/realtimedemo.ico \
-    src/realtimedemo/res/realtimedemo.rc2 \
-    src/realtimedemo/res/runPB.ico
+
+ANDROID_ABIS = armeabi-v7a
 

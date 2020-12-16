@@ -273,6 +273,10 @@ while(!cSet){
         ChatClient *client = new ChatClient(this);
 qDebug() << "Connecting...";
 
+        connect(client, SIGNAL(inbox(const QString &result)), this, SIGNAL(inbox(const QString &result)));
+        // if server setup we dont need the send force command to be set up
+        connect(this, SIGNAL(sendForceCommand(const QString &result)), client, SLOT(sendMessage(const QString &result)));
+
         connect(client, &ChatClient::messageReceived,
                 this, &bluetooth::showMessage);
         connect(client, &ChatClient::disconnected,

@@ -2,7 +2,7 @@ import QtQuick 2.15
 import QtQuick.Controls 2.15
 import QtQuick.Layouts 1.1
 
-import StatsMdl 1.0
+//import favStatsMdl 1.0
 
 Page {
     id: favsPage
@@ -118,9 +118,9 @@ Page {
 
             clip: true
 
-            model: StatsModel {
-                list: favStats
-            }
+            //model: FavStatsModel {
+            //    list: fcStats
+            //}
 
             delegate: Rectangle {
                 id: lvrec

@@ -42,10 +42,13 @@ public:
     explicit bluetooth(QObject *parent = nullptr);
 
 signals:
+
+    void inbox(const QString &result);
+    void sendForceCommand(const QString &result);
+
     void sendMessage(const QString &message);
     void socketErrorOccurred(const QString &errorString);
     void connected(const QString &name);
-
 
 public slots:
     void deviceDiscovered(const QBluetoothDeviceInfo &device);

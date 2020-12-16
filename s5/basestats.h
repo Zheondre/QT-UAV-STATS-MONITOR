@@ -32,12 +32,12 @@ public:
 
     explicit BaseStats(QObject *parent = nullptr);
      BaseStats(StatsType typ); 
-    BaseStats(StatsType type,BaseStats* fl);
 
     // ~BaseStats(){
      //make sure to destroy all objects in vector
      //m}
-
+    virtual void deserialize(QStringList Data);
+    static QVector<StatsItem*> m_pfavList;
 
     QVector<StatsItem*> getStatItems();
     StatsType getStatsType()const;
@@ -47,9 +47,26 @@ public:
     //virtual  double getValue(int item);
     //virtual int getTickCount();
 
-    virtual int getValue(int idx) const;
-    virtual QString getName(int idx) const;
-    virtual QString getUnit(int idx) const;
+//#ifdef true
+    virtual int getFavValue(int idx) const;
+    QString getFavName(int idx) const;
+    QString getFavUnit(int idx) const;
+
+    void setFavInput(const QString &val, int idx);
+
+    bool getFavFav(int idx) const;
+    bool getFavForce(int idx) const;
+    bool getFavPlot(int idx) const;
+
+    void setFavFav(bool val, int idx);
+    void setFavForce(bool val, int idx);
+    void setFavPlot(bool val, int idx);
+
+    void setFavValue(const int val, bool update, int idx);
+//#endif
+     int getValue(int idx) const;
+     virtual QString getName(int idx) const;
+     virtual QString getUnit(int idx) const;
 
      void setName(const QString &val, int idx);
      //void setValue(const int val, int idx);
@@ -82,6 +99,11 @@ public slots:
     //void addFav();
 
 signals:
+   void preItemAppend();
+   void postItemAppended();
+   void preItemRemoved();
+   void postItemRemoved();
+
     void dataChanged(const int rowIndex, const int modelRole);
     void favChanged(const BaseStats *inst, const int modelRole, const bool val);
     void graphAdded(BaseStats *inst, int rowIndex);
@@ -93,7 +115,7 @@ protected:
 
 private:
      //static BaseStats factory(BaseStats::StatsType typ);
-BaseStats* m_pfavList;
+//static BaseStats* m_pfavList;
 
 
 };

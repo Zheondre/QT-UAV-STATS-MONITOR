@@ -52,6 +52,7 @@
 #define CHATCLIENT_H
 
 #include <QtCore/qobject.h>
+#include <QThread>
 
 #include <QtBluetooth/qbluetoothserviceinfo.h>
 #include <QtBluetooth/qbluetoothsocket.h>
@@ -61,7 +62,8 @@ QT_FORWARD_DECLARE_CLASS(QBluetoothSocket)
 QT_USE_NAMESPACE
 
 //! [declaration]
-class ChatClient : public QObject
+//class ChatClient : public QObject
+class ChatClient : public QThread
 {
     Q_OBJECT
 
@@ -76,6 +78,9 @@ public slots:
     void sendMessage(const QString &message);
 
 signals:
+
+    void inbox(const QString &result);
+
     void messageReceived(const QString &sender, const QString &message);
     void connected(const QString &name);
     void disconnected();
