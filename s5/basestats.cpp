@@ -20,6 +20,9 @@ BaseStats::BaseStats(StatsType type) : QObject(nullptr), m_Type(type)
 
 }
 
+void BaseStats::deserialize(QString Data){
+;
+}
 
 QVector<StatsItem*> BaseStats::getStatItems(){ return mItems; }
 
@@ -36,7 +39,6 @@ void BaseStats::updateFavList(StatsItem *obj, int rowIndex){
             //emit postItemRemove
         }
 }
-
 
 BaseStats::StatsType BaseStats::getStatsType() const
 {
@@ -66,28 +68,13 @@ BaseStats::StatsType BaseStats::getStatsType() const
 
   QString BaseStats::getFavName(int idx) const
 {
-    if(m_pfavList.size() > idx)
-        return m_pfavList.at(idx)->m_sName;
-    else
-        return "items ERROR";
+      return "";
 }
 
   QString BaseStats::getFavUnit(int idx) const
 {
-    if(m_pfavList.size() > idx)
-        return m_pfavList.at(idx)->m_sUnit;
-    else
-        return "Index ERROR";
+      return "";
 }
-
-/*
-void BaseStats::setValue(const int val, int idx, QVector<StatsItem *> &items)
-{
-    items.at(idx)->m_nValue = val;
-    emit dataChanged(idx,FCSTAT_VALUE);
-}
-*/
-
 
 void BaseStats::setFavInput(const QString &val, int idx){
 
@@ -189,34 +176,12 @@ void BaseStats::setFavValue(const int val, bool update, int idx)
 
   QString BaseStats::getName(int idx) const
 {
-    if(mItems.size() > idx)
-        return mItems.at(idx)->m_sName;
-    else
-        return "Index ERROR";
+    return "";
 }
 
   QString BaseStats::getUnit(int idx) const
 {
-    if(mItems.size() > idx)
-        return mItems.at(idx)->m_sUnit;
-    else
-        return "Index ERROR";
-}
-
-void BaseStats::setName(const QString &val, int idx)
-{
-    mItems.at(idx)->m_sName = val;
-    emit dataChanged(idx,FCSTAT_NAME);
-}
-/*
-void BaseStats::setValue(const int val, int idx)
-{
-    mItems.at(idx)->m_nValue = val;
-    emit dataChanged(idx,FCSTAT_VALUE);
-}
-*/
-void BaseStats::setUnit(const QString &val, int idx){
-    mItems.at(idx)->m_sUnit = val;
+    return "";
 }
 
 void BaseStats::setInput(const QString &val, int idx){
@@ -244,8 +209,8 @@ bool BaseStats::getForce(int idx) const
         return mItems.at(idx)->m_bForce;
     else
         return false;
-
 }
+
 bool BaseStats::getPlot(int idx) const
 {
     if(mItems.size() > idx)
@@ -261,9 +226,9 @@ void BaseStats::setFav(bool val, int idx)
 
       if(mItems.at(idx)->m_bFav){
           if(!m_pfavList.contains(mItems.at(idx ))){
-              //emit preItemAppend();
+              emit preItemAppend();
               m_pfavList.append(mItems.at(idx));
-              //emit postItemAppend();
+              emit postItemAppended();
             //emit favChanged(m_pfavList.size());
           }
       }else
@@ -271,9 +236,9 @@ void BaseStats::setFav(bool val, int idx)
               int j  =0;
               for(auto i: m_pfavList){
                   if(i == m_pfavList.at(j)){
-                      //emit postItemRemoved()
+                      emit preItemRemoved(j);
                       m_pfavList.remove(j);
-                      //emit postItemRemoved();
+                      emit postItemRemoved();
                         break;
                   }
                    j++;
@@ -306,9 +271,6 @@ void BaseStats::setValue(const int val, bool update, int idx)
         }
     }
 }
-
-//void BaseStats::setForce(bool val,  bool update, int idx){}
-//void BaseStats::setPlot(bool val,  bool update, int idx){}
 
 /*int BaseStats::getTickCount(){return 0;}*/
 

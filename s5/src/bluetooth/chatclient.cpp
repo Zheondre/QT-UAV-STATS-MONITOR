@@ -152,8 +152,10 @@ void ChatClient::readSocket()
 //! [sendMessage]
 void ChatClient::sendMessage(const QString &message)
 {
-    QByteArray text = message.toUtf8() + '\n';
-    socket->write(text);
+    if(socket){
+        QByteArray text = message.toUtf8() + '\n';
+        socket->write(text);
+    }
 }
 //! [sendMessage]
 

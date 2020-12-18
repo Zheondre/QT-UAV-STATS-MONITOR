@@ -28,7 +28,7 @@ int main(int argc, char *argv[])
    //TODO make a seperate thread for running bluetooth !
     bluetooth d;
 
-    //QObject::connect(&d, sendForceCommand(), client, sendForceCommand);
+    QObject::connect(&d, &bluetooth::sendForceCommand, &fcStats, &FcAirStats::sendForceCommand);
     QObject::connect(&d, SIGNAL(&bluetooth::inbox(const QString &result)), &fcStats, SLOT(&FcAirStats::deserialize(const QString &result)));
     //d.connectClicked();
 

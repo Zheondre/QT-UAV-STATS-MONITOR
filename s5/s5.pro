@@ -51,7 +51,8 @@ HEADERS += \
     src/bluetooth/chatserver.h \
     src/bluetooth/remoteselector.h \
     src/statsModel.h \
-    src/favstatsmodel.h
+    src/favstatsmodel.h \
+    statsEntry.h
 
 SUBDIRS += \
     src/bluetooth/btchat.pro

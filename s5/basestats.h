@@ -11,32 +11,32 @@ class BaseStats: public QObject
 public:
 
     enum {
-     FCSTAT_FAV = Qt::UserRole,
-     FCSTAT_PLOT,
-     FCSTAT_NAME,
-     FCSTAT_VALUE,
-     FCSTAT_UNIT,
-     FCSTAT_FORCE,
-     FCSTAT_UINPUT
+        FCSTAT_FAV = Qt::UserRole,
+        FCSTAT_PLOT,
+        FCSTAT_NAME,
+        FCSTAT_VALUE,
+        FCSTAT_UNIT,
+        FCSTAT_FORCE,
+        FCSTAT_UINPUT
     };
 
     enum StatsType {
-            Sofc,
-            Rws,
-            FcAir,
-            BMS,
-            FcDiags,
-            Custom,
-            Any
+        Sofc,
+        Rws,
+        FcAir,
+        BMS,
+        FcDiags,
+        Custom
     };
 
     explicit BaseStats(QObject *parent = nullptr);
-     BaseStats(StatsType typ); 
+    BaseStats(StatsType typ);
 
     // ~BaseStats(){
-     //make sure to destroy all objects in vector
-     //m}
-    virtual void deserialize(QStringList Data);
+    //make sure to destroy all objects in vector
+    //m}
+
+    virtual void deserialize(QString Data);
     static QVector<StatsItem*> m_pfavList;
 
     QVector<StatsItem*> getStatItems();
@@ -47,10 +47,9 @@ public:
     //virtual  double getValue(int item);
     //virtual int getTickCount();
 
-//#ifdef true
     virtual int getFavValue(int idx) const;
-    QString getFavName(int idx) const;
-    QString getFavUnit(int idx) const;
+    virtual QString getFavName(int idx) const;
+    virtual QString getFavUnit(int idx) const;
 
     void setFavInput(const QString &val, int idx);
 
@@ -63,46 +62,32 @@ public:
     void setFavPlot(bool val, int idx);
 
     void setFavValue(const int val, bool update, int idx);
-//#endif
-     int getValue(int idx) const;
-     virtual QString getName(int idx) const;
-     virtual QString getUnit(int idx) const;
 
-     void setName(const QString &val, int idx);
-     //void setValue(const int val, int idx);
-     void setUnit(const QString &val, int idx);
-     void setInput(const QString &val, int idx);
+    int getValue(int idx) const;
+    virtual QString getName(int idx) const;
+    virtual QString getUnit(int idx) const;
+
+    void setInput(const QString &val, int idx);
 
     bool getFav(int idx) const;
     bool getForce(int idx) const;
     bool getPlot(int idx) const;
 
     virtual void setFav(bool val, int idx);
-    void setForce(bool val, int idx);
-    virtual void setPlot(bool val, int idx);
+    virtual void setForce(bool val, int idx);
+    void setPlot(bool val, int idx);
 
     void setValue(const int val, bool update, int idx);
 
-    //void setFav(bool val,  bool update, int idx);
-    //void setForce(bool val,  bool update, int idx);
-    //void setPlot(bool val,  bool update, int idx);
-
-    //void setName(const QString &val,  bool update, int idx);
-    //void setInput(const QString &val,  bool update, int idx);
-    //void setInput(const QString &val,  bool update, int idx);
-    //void setUnit(const QString &val,  bool update, int idx);
-
-    //static bool s_bIncludeFcAir;
 public slots:
     void updateFavList(StatsItem *obj, int rowIndex);
-    //void removeFav();
-    //void addFav();
 
 signals:
-   void preItemAppend();
-   void postItemAppended();
-   void preItemRemoved();
-   void postItemRemoved();
+    void sendForceCommand(const QString &result);
+    void preItemAppend();
+    void postItemAppended();
+    void preItemRemoved(int index);
+    void postItemRemoved();
 
     void dataChanged(const int rowIndex, const int modelRole);
     void favChanged(const BaseStats *inst, const int modelRole, const bool val);
@@ -114,27 +99,20 @@ protected:
     StatsType m_Type;
 
 private:
-     //static BaseStats factory(BaseStats::StatsType typ);
-//static BaseStats* m_pfavList;
-
 
 };
 
+struct StatsItem {
 
-struct StatsItem
-{
     BaseStats::StatsType m_Type;
 
     bool m_bFav;
     bool m_bForce;
     bool m_bPlot;
 
-    QString m_sName;
     int m_nValue;
-    QString m_sUnit;
-    QString m_sInput;
-
     int m_npos;
+    QString m_sInput;
 
     StatsItem(BaseStats::StatsType type, int idx)  {
         m_Type = type;
@@ -143,27 +121,22 @@ struct StatsItem
         m_bForce =false;
         m_bPlot = true;
 
-        QString m_sName = "";
         int m_nValue = 0;
-        QString m_sUnit= "";
         QString m_sInput= "";
 
         m_npos = idx;
     };
+};
 
-    StatsItem(int idx){
-        m_Type = BaseStats::StatsType::Custom;
+struct CustomItem : StatsItem
+{
+    QString m_sName;
+    QString m_sUnit;
 
-        m_bFav = false;
-        m_bForce =false;
-        m_bPlot = false;
-
-        QString m_sName = "";
-        int m_nValue= 0;
+    CustomItem(int idx) : StatsItem(BaseStats::StatsType::Custom, idx) {
         QString m_sUnit= "";
         QString m_sInput= "";
-
-        m_npos = idx;
     };
+
 };
 #endif // BASESTATS_H

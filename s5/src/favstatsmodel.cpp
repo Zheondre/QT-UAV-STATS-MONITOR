@@ -17,7 +17,7 @@ QVariant favStatsModel::data(const QModelIndex &index, int role) const
     if (!index.isValid())
         return QVariant();
     //qDebug() << "Testing getData";
-//#ifdef false
+
   switch(role){
     case FCSTAT_FAV:
         return QVariant( m_pList->getFavFav(index.row()));
@@ -34,7 +34,7 @@ QVariant favStatsModel::data(const QModelIndex &index, int role) const
     //case FCSTAT_UINPUT:
    //      return QVariant(item.getInput());
     }
-//#endif
+
     return QVariant();
 }
 
@@ -45,8 +45,6 @@ bool favStatsModel::setData(const QModelIndex &index, const QVariant &value, int
 
     if(!m_pList)
         return false;
-
-//#ifdef false
 
     switch(role){
        case FCSTAT_FAV:
@@ -72,7 +70,6 @@ bool favStatsModel::setData(const QModelIndex &index, const QVariant &value, int
              m_pList->setFavInput(value.toString(), index.row());
              break;
     }
-//#endif
 
     emit dataChanged(index, index, QVector<int>() << role);
     return true;
@@ -89,9 +86,9 @@ void favStatsModel::setList(BaseStats *list){
     m_pList = list;
 
     if(m_pList){
-       //load model list data change notification connections
-       connect(m_pList, SIGNAL(dataChanged(const int,const int)), this, SLOT(update(const int, const int)));
 
+       //load model list data change notification connections
+        connect(m_pList, SIGNAL(dataChanged(const int,const int)), this, SLOT(update(const int, const int)));
 
         connect( m_pList, &BaseStats::preItemAppend, this, [=](){
            const int index = list->m_pfavList.size();
@@ -102,7 +99,7 @@ void favStatsModel::setList(BaseStats *list){
             endInsertRows();
         });
 
-        connect( m_pList, &BaseStats::preItemRemoved, this, [=](int index){
+       connect( m_pList, &BaseStats::preItemRemoved, this, [=](int index){
            beginRemoveRows(QModelIndex(), index, index);
         });
 

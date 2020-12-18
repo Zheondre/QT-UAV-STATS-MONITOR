@@ -71,13 +71,13 @@ bool statsModel::setData(const QModelIndex &index, const QVariant &value, int ro
             m_pList->setPlot(value.toBool(), index.row());
         break;
         case FCSTAT_NAME:
-            m_pList->setName(value.toString(), index.row());
+            //m_pList->setName(value.toString(), index.row());
             break;
         case FCSTAT_VALUE:
             //m_pList->setValue(value.toInt(), index.row());
             break;
         case FCSTAT_UNIT:
-            m_pList->setUnit(value.toString(), index.row());
+          //  m_pList->setUnit(value.toString(), index.row());
             break;
         case FCSTAT_FORCE:
             m_pList->setForce(value.toBool(), index.row());
