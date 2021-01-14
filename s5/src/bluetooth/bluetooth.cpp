@@ -4,21 +4,16 @@
 #include "chatclient.h"
 
 #include <QtCore/qdebug.h>
-
 #include <QtCore/qmetaobject.h>
 
 #ifdef Q_OS_ANDROID
 #include <QtAndroidExtras/QtAndroid>
 #endif
-//4+ 2 + 2 + 2 + 6
-//static const QLatin1String serviceUuid("e8e10f95-1a70-4b27-9ccf-02010264e9c8"); // 16 byte uuid
-static const QLatin1String serviceUuid("e0cbf06c-cd8b-4647-bb8a-263b43f0f974"); // ballard laptop #6977 GUID
 
+static const QLatin1String serviceUuid("e0cbf06c-cd8b-4647-bb8a-263b43f0f974"); // ballard laptop #6977 GUID
 #ifdef Q_OS_ANDROID
 static const QLatin1String reverseUuid("c8e96402-0102-cf9c-274b-701a950fe1e8");
-//static const QLatin1String reverseUuid("00001101-0000-1000-8000-00805F9B34FB");
 #endif
-
 
 void bluetooth::connected()
 {
@@ -39,12 +34,13 @@ void bluetooth::deviceDiscovered(const QBluetoothDeviceInfo &device)
     if(ulp.count() > 0 )
 #ifdef Q_OS_ANDROID
         if (ulp.contains(QBluetoothUuid(reverseUuid))){
+            //test
+            if( device.address().toString()== "50:76:AF:31:11:5D"){//ballard laptop 6977
+                int x = 0;
+            }
 #else
         if (ulp.contains(QBluetoothUuid(serviceUuid))){
 #endif
-        //if( device.address().toString()== "50:76:AF:31:11:5D"){ //ballard laptop //"04:D3:95:BC:DE:E0" motorola remote
-        //if( device.address().toString()== "A8:86:DD::95::F5::CF"){ // ubuntu
-        //if(!socket){
             socket = new QBluetoothSocket(QBluetoothServiceInfo::RfcommProtocol);
 
             connect(socket, &QBluetoothSocket::connected, this, QOverload<>::of(&bluetooth::connected));
@@ -52,14 +48,16 @@ void bluetooth::deviceDiscovered(const QBluetoothDeviceInfo &device)
             connect(socket, QOverload<QBluetoothSocket::SocketError>::of(&QBluetoothSocket::error),
                     this, &bluetooth::onSocketErrorOccurred);
 
+
+            connect(server, &ChatServer::messageReceived,
+                    this,  &bluetooth::showMessage);
+            connect(this, &bluetooth::sendMessage, server, &ChatServer::sendMessage);
+
 #ifdef Q_OS_ANDROID
             socket->connectToService(device.address(), QBluetoothUuid(reverseUuid), QIODevice::ReadWrite);
 #else
             socket->connectToService(device.address(), QBluetoothUuid(serviceUuid), QIODevice::ReadWrite);
 #endif
-            //socket->connectToService(device.address(), QBluetoothUuid(QBluetoothUuid::Rfcomm), QIODevice::ReadWrite);
-            //socket->connectToService(device.address(), 1, QIODevice::ReadWrite );
-
             qDebug() <<socket->state();
             qDebug() << socket->errorString();
         }
@@ -73,107 +71,124 @@ void bluetooth::deviceDiscovered()
 
 bluetooth::bluetooth(QObject *parent) : QObject(parent){
 
+    //bluetooth::bluetooth(QObject *parent) : QThread(parent){
+        searching = false;
+        cltCnt = false;
+        //remoteSelector = nullptr;
+
+        localAdapters = QBluetoothLocalDevice::allDevices();
 #ifdef Q_OS_ANDROID
-    localAdapters = QBluetoothLocalDevice::allDevices();
-
-
-    QBluetoothLocalDevice adapter(localAdapters.at(0).address());
-    adapter.setHostMode(QBluetoothLocalDevice::HostDiscoverable);
-
-    //! [Get local device name]
-    localName = QBluetoothLocalDevice().name();
-    //! [Get local device name]
-
-    // Create a discovery agent and connect to its signals
-    discoveryAgent = new QBluetoothDeviceDiscoveryAgent(this);
-
-    connect(discoveryAgent, SIGNAL(deviceDiscovered(QBluetoothDeviceInfo)),
-    this, SLOT(deviceDiscovered(QBluetoothDeviceInfo)));
-
-    //connect(discoveryAgent, SIGNAL(finished()), this, SLOT(deviceDiscovered()));
-
-    // Start a discovery
-    discoveryAgent->start();
-#else
-
-    server = new ChatServer(this);
-    connect(server, QOverload<const QString &>::of(&ChatServer::clientConnected),
-            this, &bluetooth::clientConnected);
-    connect(server, QOverload<const QString &>::of(&ChatServer::clientDisconnected),
-            this,  QOverload<const QString &>::of(&bluetooth::clientDisconnected));
-    connect(server, &ChatServer::messageReceived,
-            this,  &bluetooth::showMessage);
-    connect(this, &bluetooth::sendMessage, server, &ChatServer::sendMessage);
-
-    server->startServer();
-
-
-    //! [Create Chat Server]
-
-    //! [Get local device name]
-    localName = QBluetoothLocalDevice().name();
-    //! [Get local device name]
-
-#endif
-#if false
-    //discoveryAgent->discoveredDevices();
-    /////////////////////////////////////////////////////
-   // const  QBluetoothAddress  address("04:D3:95:BC:DE:E0");
-    const  QBluetoothAddress  address("A8:86:DD::95::F5::CF");
-    //discoveryAgent = new QBluetoothDeviceDiscoveryAgent(address);
-
-    socket = new QBluetoothSocket(QBluetoothServiceInfo::RfcommProtocol);
-
-    connect(socket, &QBluetoothSocket::connected, this, QOverload<>::of(&bluetooth::connected));
-    //connect(socket, &QBluetoothSocket::disconnected, this, &ChatClient::disconnected);
-    connect(socket, QOverload<QBluetoothSocket::SocketError>::of(&QBluetoothSocket::error),
-            this, &bluetooth::onSocketErrorOccurred);
-
-    //socket->connectToService(address, QBluetoothUuid(serviceUuid), QIODevice::ReadWrite);
-    socket->connectToService(address,  QBluetoothUuid(QBluetoothUuid::Rfcomm), QIODevice::ReadWrite);
-
-    //qDebug() <<socket->state();
-    //qDebug() << socket->errorString();
-/*
-    connect(socket, &QBluetoothSocket::connected, this, QOverload<>::of(&bluetooth::connected));
-    //connect(socket, &QBluetoothSocket::disconnected, this, &ChatClient::disconnected);
-    connect(socket, QOverload<QBluetoothSocket::SocketError>::of(&QBluetoothSocket::error),
-            this, &bluetooth::onSocketErrorOccurred);
-*/
-#endif
-#if false
-QString localDeviceName;
-QBluetoothLocalDevice localDevice;
-    // Read local device name
-    localDeviceName = localDevice.name();
-
-    // Make it visible to others
-    localDevice.setHostMode(QBluetoothLocalDevice::HostDiscoverable);
-
-
-    // Get connected devices
-    //QList<QBluetoothAddress> remotes;
-    //remotes = localDevice.connectedDevices();
-#endif
-////////////////////////////////////////////
-#if false
-    localAdapters = QBluetoothLocalDevice::allDevices();
-    if (localAdapters.count() < 2) {
-        //ui->localAdapterBox->setVisible(false);
-    } else {
-        //we ignore more than two adapters
-        //ui->localAdapterBox->setVisible(true);
-        //ui->firstAdapter->setText(tr("Default (%1)", "%1 = Bluetooth address").
-          //                        arg(localAdapters.at(0).address().toString()));
-        //ui->secondAdapter->setText(localAdapters.at(1).address().toString());
-        //ui->firstAdapter->setChecked(true);
-        //connect(ui->firstAdapter, &QRadioButton::clicked, this, &Chat::newAdapterSelected);
-        //connect(ui->secondAdapter, &QRadioButton::clicked, this, &Chat::newAdapterSelected);
         QBluetoothLocalDevice adapter(localAdapters.at(0).address());
         adapter.setHostMode(QBluetoothLocalDevice::HostDiscoverable);
-    }
+#endif
+        server = new ChatServer(this);
 
- #endif
+        //QButton *button =
+        //connect(, onclick, this, run);
+
+        connect(server, QOverload<const QString &>::of(&ChatServer::clientConnected),
+                this, &bluetooth::clientConnected);
+        connect(server, QOverload<const QString &>::of(&ChatServer::clientDisconnected),
+                this,  QOverload<const QString &>::of(&bluetooth::clientDisconnected));
+        connect(server, &ChatServer::messageReceived,
+                this,  &bluetooth::showMessage);
+        connect(this, &bluetooth::sendMessage, server, &ChatServer::sendMessage);
+
+        server->startServer();
+        //! [Create Chat Server]
+
+        //! [Get local device name]
+        localName = QBluetoothLocalDevice().name();
+        //! [Get local device name]
+
+}
+
+bluetooth::~bluetooth()
+{
+    //mutex.lock();
+    //abort = true;
+    //condition.wakeOne();
+    //mutex.unlock();
+
+   // wait();
+}
+
+void bluetooth::run(){
+
+    const QBluetoothAddress adapter = localAdapters.isEmpty() ?
+                                           QBluetoothAddress() :
+                                           localAdapters.at(0).address();
+
+    //remoteSelector = new RemoteSelector(adapter);
+    //adapter.setHostMode(QBluetoothLocalDevice::HostDiscoverable);
+    RemoteSelector remoteSelector(adapter);
+
+  //  forever{
+        // scan for services
+        if((!cltCnt)){
+
+            if(!searching){
+#ifdef Q_OS_ANDROID
+                if (QtAndroid::androidSdkVersion() >= 23)
+                    remoteSelector.startDiscovery(QBluetoothUuid(reverseUuid));
+                else
+                    remoteSelector.startDiscovery(QBluetoothUuid(serviceUuid));
+#else
+                 remoteSelector.startDiscovery(QBluetoothUuid(serviceUuid));
+#endif
+                searching = true;
+            }
+
+            if(remoteSelector.serviceReady()){//make thread wait or block thread here
+                QBluetoothServiceInfo service = remoteSelector.service();
+
+                qDebug() << "Connecting to service 2" << service.serviceName()
+                         << "on" << service.device().name();
+
+                ChatClient *client = new ChatClient(this);
+                qDebug() << "Connecting...";
+
+                connect(client, &ChatClient::inbox, this, &bluetooth::inbox);
+                connect(client, &ChatClient::disconnected, this, QOverload<>::of(&bluetooth::clientDisconnected));
+                // connect(client, QOverload<const QString &>::of(&ChatClient::connected),
+                 //       this, &bluetooth::connected);
+                //connect(client, QOverload<>::of(&ChatClient::connected),
+                 //       this, &bluetooth::connected);
+                connect(client, &ChatClient::socketErrorOccurred, this, &bluetooth::reactOnSocketError);
+                connect(this, &bluetooth::sendMessage, client, &ChatClient::sendMessage);
+
+                 client->startClient(service);
+                 clients.append(client);
+                 searching = false;
+               //  return;///TEMP
+            }
+        } else {
+         //connected and desktop send out messages once a secoond
+#define TEST
+#ifdef Q_OS_WIN || Q_OS_LINUX
+    #ifdef TEST
+    mes = "$PCRL,$FCAIRSTA,";
+
+    //for(auto i: statsList) {
+    for(auto j : statsList->getStatItems()){
+        //mes += QString::number(j->m_nValue) +", ";
+        mes += QString::number(rand() %100 ) +", ";
+    }
+    //}
+    mes += "END<<";
+
+    #endif
+     if(clients.at(0))
+        clients.at(0)->sendMessage(mes);
+     else {
+         cltCnt = false;
+         searching = false;
+     }
+#endif
+        }
+
+        //sleep(1);
+    //}
 }
 
 //! [clientConnected clientDisconnected]
@@ -187,15 +202,6 @@ void bluetooth::clientDisconnected(const QString &name)
     qDebug() << "Client Disconnected";
 }
 //! [clientConnected clientDisconnected]
-
-//! [connected]
-/*
-void bluetooth::connected(const QString &name)
-{
-    qDebug() << "Connected";
-    //ui->chat->insertPlainText(QString::fromLatin1("Joined chat with %1.\n").arg(name));
-}*/
-//! [connected]
 
 void bluetooth::newAdapterSelected()
 {
@@ -240,74 +246,6 @@ void bluetooth::clientDisconnected()
 }
 //! [clientDisconnected]
 
-//! [Connect to remote service]
-void bluetooth::connectClicked()
-{
-    //ui->connectButton->setEnabled(false);
-
-    // scan for services
-    const QBluetoothAddress adapter = localAdapters.isEmpty() ?
-                                           QBluetoothAddress() :
-                                           localAdapters.at(currentAdapterIndex).address();
-
-    RemoteSelector remoteSelector(adapter);
-#ifdef Q_OS_ANDROID
-   // if (QtAndroid::androidSdkVersion() >= 23)
-        //remoteSelector.startDiscovery(QBluetoothUuid(reverseUuid));
-    //else
-        remoteSelector.startDiscovery(QBluetoothUuid(serviceUuid));
-#else
-   remoteSelector.startDiscovery(QBluetoothUuid(serviceUuid));
-#endif
-bool cSet = false ;
-
-while(!cSet){
-  if(remoteSelector.serviceReady()){
-        QBluetoothServiceInfo service = remoteSelector.service();
-
-        qDebug() << "Connecting to service 2" << service.serviceName()
-                 << "on" << service.device().name();
-
-        // Create client
-        qDebug() << "Going to create client";
-        ChatClient *client = new ChatClient(this);
-qDebug() << "Connecting...";
-
-        connect(client, SIGNAL(inbox(const QString &result)), this, SIGNAL(inbox(const QString &result)));
-        // if server setup we dont need the send force command to be set up
-        connect(this, SIGNAL(sendForceCommand(const QString &result)), client, SLOT(sendMessage(const QString &result)));
-
-        connect(client, &ChatClient::messageReceived,
-                this, &bluetooth::showMessage);
-        connect(client, &ChatClient::disconnected,
-                this, QOverload<>::of(&bluetooth::clientDisconnected));
-        //connect(client, QOverload<const QString &>::of(&ChatClient::connected),
-                //this, &bluetooth::connected);
-        //connect(client, QOverload<>::of(&ChatClient::connected),
-          //      this, &bluetooth::connected);
-        connect(client, &ChatClient::socketErrorOccurred,
-                this, &bluetooth::reactOnSocketError);
-        connect(this, &bluetooth::sendMessage, client, &ChatClient::sendMessage);
-qDebug() << "Start client";
-        client->startClient(service);
-
-        clients.append(client);
-        cSet = true;
-    }
-}
-
-
-    //ui->connectButton->setEnabled(true);
-}
-//! [Connect to remote service]
-//!
-//! //! [sendClicked]
-void bluetooth::sendClicked()
-{
-    emit sendMessage("Hello World");
-}
-//! [sendClicked]
-
 
 //! [showMessage]
 void bluetooth::showMessage(const QString &sender, const QString &message)
@@ -317,6 +255,9 @@ void bluetooth::showMessage(const QString &sender, const QString &message)
     //ui->chat->insertPlainText(Q <<String::fromLatin1("%1: %2\n").arg(sender, message));
     qDebug()<<sender << " "  << message;
     //ui->chat->ensureCursorVisible();
+//copies message
+    //TEMP might need semaphore
+        //mes = m;
 }
 //! [showMessage]
 //!
@@ -332,3 +273,8 @@ void bluetooth::showMessage(const QString &sender, const QString &message)
     emit socketErrorOccurred(errorString);
 }
 
+
+ void bluetooth::addStats(FcAirStats *s){
+ //statsList.append(s);
+     statsList = s;
+ }

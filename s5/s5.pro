@@ -1,5 +1,5 @@
 QT += quick
-QT += bluetooth
+QT += core bluetooth
 
 CONFIG += c++11
 CONFIG += qml_debug
@@ -19,7 +19,11 @@ DEFINES += QT_DEPRECATED_WARNINGS
 # You can also select to disable deprecated APIs only up to a certain version of Qt.
 #DEFINES += QT_DISABLE_DEPRECATED_BEFORE=0x060000    # disables all the APIs deprecated before Qt 6.0.0
 
+android: QT += androidextras
+
 SOURCES += \
+        btworker.cpp \
+        driver.cpp \
         main.cpp \
         basestats.cpp \
         src/FcAir/fcairstats.cpp \
@@ -45,6 +49,8 @@ else: unix:!android: target.path = /opt/$${TARGET}/bin
 
 HEADERS += \
     basestats.h \
+    btworker.h \
+    driver.h \
     src/FcAir/fcairstats.h \
     src/bluetooth/bluetooth.h \
     src/bluetooth/chatclient.h \
@@ -66,5 +72,5 @@ DISTFILES += \
     src/bluetooth/doc/images/btchat-example.png \
     src/bluetooth/doc/src/btchat.qdoc \
 
-ANDROID_ABIS = armeabi-v7a
+ANDROID_ABIS = armeabi-v7a arm64-v8a
 

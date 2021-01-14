@@ -85,10 +85,9 @@ void RemoteSelector::startDiscovery(const QBluetoothUuid &uuid)
     if (m_discoveryAgent->isActive())
         m_discoveryAgent->stop();
 
-    //ui->remoteDevices->clear();
-
-   m_discoveryAgent->setUuidFilter(uuid);
-    m_discoveryAgent->start(QBluetoothServiceDiscoveryAgent::FullDiscovery);
+   //m_discoveryAgent->setUuidFilter(uuid);
+    //m_discoveryAgent->start(QBluetoothServiceDiscoveryAgent::FullDiscovery);
+    m_discoveryAgent->start();
 
 }
 
@@ -130,12 +129,13 @@ void RemoteSelector::serviceDiscovered(const QBluetoothServiceInfo &serviceInfo)
     else
         remoteName = serviceInfo.device().name();
 
-    //QListWidgetItem *item =
-      //  new QListWidgetItem(QString::fromLatin1("%1 %2").arg(remoteName,
-      //                                                       serviceInfo.serviceName()));
-
     //m_discoveredServices.insert(item, serviceInfo);
     m_discoveredServices.insert(remoteName, serviceInfo);
+
+    //***TEMP;
+    m_service = serviceInfo;
+    m_bready = true;
+    //***TEMP
     //ui->remoteDevices->addItem(item);
 }
 
@@ -154,7 +154,7 @@ void RemoteSelector::on_remoteDevices_itemActivated(QListWidgetItem *item)
    // m_service = m_discoveredServices.value(item);
     if (m_discoveryAgent->isActive())
         m_discoveryAgent->stop();
-m_bready = true;
+    m_bready = true;
     //accept();
 }
 

@@ -33,7 +33,6 @@ QVariant statsModel::data(const QModelIndex &index, int role) const
   switch(role){
     case FCSTAT_FAV:
         return QVariant(m_pList->getFav(index.row()));
-        //emit favDataChanged();
     case FCSTAT_PLOT:
         return QVariant(m_pList->getPlot(index.row()));
     case FCSTAT_NAME:
@@ -65,6 +64,7 @@ bool statsModel::setData(const QModelIndex &index, const QVariant &value, int ro
     switch(role){
        case FCSTAT_FAV:
         m_pList->setFav(value.toBool(), index.row());
+         //emit favDataChanged();
         break;
 
         case FCSTAT_PLOT:

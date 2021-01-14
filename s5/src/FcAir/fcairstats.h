@@ -1,11 +1,13 @@
 #ifndef FCAIRSTATS_H
 #define FCAIRSTATS_H
 
-#include "C:\Source\QT\QT GIT REPO\s5\basestats.h"
+#include "C:\Source\QT\QTGITREPO\s5\basestats.h"
 #include "statsEntry.h"
 
 class FcAirStats : public BaseStats
 {
+
+    Q_OBJECT
 public:
 
     enum IntStats {
@@ -73,8 +75,6 @@ public:
 
      FcAirStats();
 
-     void deserialize(QString Data);
-
      QString getFavName(int idx) const;
      QString getFavUnit(int idx) const;
 
@@ -86,6 +86,12 @@ public:
      //void setPlot(bool val, int idx);
 
      FcAirStats* getFcStatsInstance();
+
+signals:
+    void  btrun();
+
+     public slots:
+        void deserialize(const QString &Data);
 };
 
 #endif // FCAIRSTATS_H

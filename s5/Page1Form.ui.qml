@@ -126,11 +126,22 @@ Page {
                 anchors.horizontalCenter: parent.horizontalCenter
             }
         }*/
+        Button {
+            id: btButton
+            y: 466
+            text: qsTr("Connect")
+            anchors.left: parent.left
+            anchors.right: parent.right
+            anchors.rightMargin: -50
+            anchors.leftMargin: -50
+            onClicked: emit fcStats.runbt()
+        }
     }
 }
 
 /*##^##
 Designer {
-    D{i:0;formeditorZoom:0.5}
+    D{i:0;formeditorZoom:0.5}D{i:12}
 }
 ##^##*/
+

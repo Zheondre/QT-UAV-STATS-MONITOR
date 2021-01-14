@@ -88,7 +88,9 @@ void favStatsModel::setList(BaseStats *list){
     if(m_pList){
 
        //load model list data change notification connections
-        connect(m_pList, SIGNAL(dataChanged(const int,const int)), this, SLOT(update(const int, const int)));
+     //connetion error
+        //connect(m_pList, SIGNAL(favDataChanged(const int,const int)), this, SLOT(update(const int, const int)));
+        //connect(this, SIGNAL(favDataChanged(const int,const int)), m_pList, SLOT(update(const int, const int)));
 
         connect( m_pList, &BaseStats::preItemAppend, this, [=](){
            const int index = list->m_pfavList.size();

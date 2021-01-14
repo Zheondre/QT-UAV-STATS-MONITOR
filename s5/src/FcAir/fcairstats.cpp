@@ -57,12 +57,17 @@ FcAirStats::FcAirStats()
     for(int i = 0; i <NumShortStats; i++){
         //mItems.append(new StatsItem(StatsType::FcAir,i)) ;
         StatsItem *t = new StatsItem(StatsType::FcAir,i);
+
+        #ifdef Q_OS_WIN || Q_OS_LINUX
+        t->m_nValue = 11;
+#else
         t->m_nValue = 0;
+#endif
         mItems.append(t);
     }
 }
 
-void FcAirStats::deserialize(QString Data){
+void FcAirStats::deserialize(const QString &Data){//make this to const ref
 // get tick count or time count when data comes in
     char sDelim = { '*' };
      QStringList sNoCs = Data.split(sDelim);
@@ -87,7 +92,7 @@ void FcAirStats::deserialize(QString Data){
          if (i - nSkip + nStatsSkip + 1 >= NumShortStats)
              break;
      }
-     //emit conversioComplete();
+     //emit conversionComplete();
 }
 
 QString FcAirStats::getFavName(int idx) const

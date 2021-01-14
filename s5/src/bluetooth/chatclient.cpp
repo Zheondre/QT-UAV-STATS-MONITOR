@@ -144,7 +144,7 @@ void ChatClient::readSocket()
 
         }
 
-       // emit messageReceived(socket->peerName(),
+        //emit messageReceived(socket->peerName(),
          //QString::fromUtf8(line.constData(), line.length()));
 }
 //! [readSocket]
