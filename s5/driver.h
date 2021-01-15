@@ -6,7 +6,7 @@
 #include "basestats.h"
 #include "C:\Source\QT\QTGITREPO\s5\src\bluetooth\bluetooth.h"
 #include <QTimer>
-#include "btworker.h"
+//#include "btworker.h"
 
 
 class driver : public QObject
@@ -15,7 +15,7 @@ class driver : public QObject
     QThread *btThread;
     QTimer *timer;
     bluetooth *b;
-    btWorker *worker;
+  //  btWorker *worker;
 
     QString mes; //make this a vector of mes ?
 public:

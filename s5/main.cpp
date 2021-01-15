@@ -55,6 +55,9 @@ int main(int argc, char *argv[])
     }, Qt::QueuedConnection);
   engine.load(url);
 
+  QObject* home = engine.rootObjects().first()->findChild<QObject*>("homePage");
+
+   QObject::connect(home, SIGNAL(buttonBtSignal()), &d, SLOT(run()));
   /*
   QObject::connect(engine.findChild<QObject*>("btButton"),
            SIGNAL(clicked()),

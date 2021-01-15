@@ -9,6 +9,8 @@ Page {
     width: applicationWindow.width
     height: 480
 
+    signal buttonBtSignal();
+       objectName: "homePage"
     // if mobile
     Rectangle {
         id: element
@@ -128,13 +130,17 @@ Page {
         }*/
         Button {
             id: btButton
+
             y: 466
             text: qsTr("Connect")
             anchors.left: parent.left
             anchors.right: parent.right
             anchors.rightMargin: -50
             anchors.leftMargin: -50
-            onClicked: emit fcStats.runbt()
+            onClicked:{
+                 page.buttonBtSignal();
+            //emit fcStats.runbt()
+            }
         }
     }
 }

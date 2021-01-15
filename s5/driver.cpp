@@ -39,5 +39,5 @@ driver::~driver() {
 }
 
 void driver::addStats( FcAirStats *s){
-    worker->addStats(s);
+   // worker->addStats(s);
 }

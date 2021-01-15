@@ -5,7 +5,7 @@
 
 #include <QtCore/qdebug.h>
 #include <QtCore/qmetaobject.h>
-
+//#include <QtBluetooth/qbluetoothlocaldevice.h>
 #ifdef Q_OS_ANDROID
 #include <QtAndroidExtras/QtAndroid>
 #endif
@@ -79,7 +79,11 @@ bluetooth::bluetooth(QObject *parent) : QObject(parent){
         localAdapters = QBluetoothLocalDevice::allDevices();
 #ifdef Q_OS_ANDROID
         QBluetoothLocalDevice adapter(localAdapters.at(0).address());
-        adapter.setHostMode(QBluetoothLocalDevice::HostDiscoverable);
+       adapter.setHostMode(QBluetoothLocalDevice::HostDiscoverable);
+
+#else
+         //QBluetoothLocalDevice adapter( QBluetoothAddress() );
+          //adapter.setHostMode(QBluetoothLocalDevice::HostDiscoverable);
 #endif
         server = new ChatServer(this);
 
@@ -138,7 +142,8 @@ void bluetooth::run(){
 #endif
                 searching = true;
             }
-
+            bool servcomplete = false;
+//while(!servcomplete){//TEMP
             if(remoteSelector.serviceReady()){//make thread wait or block thread here
                 QBluetoothServiceInfo service = remoteSelector.service();
 
@@ -160,8 +165,10 @@ void bluetooth::run(){
                  client->startClient(service);
                  clients.append(client);
                  searching = false;
+                 servcomplete = true;
                //  return;///TEMP
             }
+//}
         } else {
          //connected and desktop send out messages once a secoond
 #define TEST

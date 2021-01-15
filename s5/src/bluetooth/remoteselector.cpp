@@ -85,8 +85,8 @@ void RemoteSelector::startDiscovery(const QBluetoothUuid &uuid)
     if (m_discoveryAgent->isActive())
         m_discoveryAgent->stop();
 
-   //m_discoveryAgent->setUuidFilter(uuid);
-    //m_discoveryAgent->start(QBluetoothServiceDiscoveryAgent::FullDiscovery);
+   m_discoveryAgent->setUuidFilter(uuid);
+    m_discoveryAgent->start(QBluetoothServiceDiscoveryAgent::FullDiscovery);
     m_discoveryAgent->start();
 
 }
