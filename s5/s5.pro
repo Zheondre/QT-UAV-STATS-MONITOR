@@ -22,7 +22,6 @@ DEFINES += QT_DEPRECATED_WARNINGS
 android: QT += androidextras
 
 SOURCES += \
-        btworker.cpp \
         driver.cpp \
         main.cpp \
         basestats.cpp \
@@ -49,7 +48,6 @@ else: unix:!android: target.path = /opt/$${TARGET}/bin
 
 HEADERS += \
     basestats.h \
-    btworker.h \
     driver.h \
     src/FcAir/fcairstats.h \
     src/bluetooth/bluetooth.h \

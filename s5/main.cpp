@@ -3,11 +3,22 @@
 #include <QQmlContext>
 
 #include "basestats.h"
+
+#ifdef __linux__
+#include "/home/z/src/test/s5/src/statsModel.h"
+#include "/home/z/src/test/s5/src/favstatsmodel.h"
+#include "/home/z/src/test/s5/src/FcAir/fcairstats.h"
+#include "/home/z/src/test/s5/src/bluetooth/bluetooth.h"
+#include "/home/z/src/test/s5/driver.h"
+#else
+
 #include "C:\Source\QT\QTGITREPO\s5\src\statsModel.h"
 #include "C:\Source\QT\QTGITREPO\s5\src\favstatsmodel.h"
 #include "C:\Source\QT\QTGITREPO\s5\src\FcAir\fcairstats.h"
 #include "C:\Source\QT\QTGITREPO\s5\src\bluetooth\bluetooth.h"
 #include "C:\Source\QT\QTGITREPO\s5\driver.h"
+
+#endif
 
 int main(int argc, char *argv[])
 {
@@ -54,7 +65,7 @@ int main(int argc, char *argv[])
             QCoreApplication::exit(-1);
     }, Qt::QueuedConnection);
   engine.load(url);
-
+// chrashes here in linux
   QObject* home = engine.rootObjects().first()->findChild<QObject*>("homePage");
 
    QObject::connect(home, SIGNAL(buttonBtSignal()), &d, SLOT(run()));

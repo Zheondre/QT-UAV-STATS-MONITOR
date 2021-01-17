@@ -2,7 +2,7 @@
 #define BASESTATS_H
 
 #include <QObject>
-
+#include <QVector>
 struct StatsItem;
 
 class BaseStats: public QObject

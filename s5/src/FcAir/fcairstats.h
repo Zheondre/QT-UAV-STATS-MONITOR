@@ -1,7 +1,10 @@
 #ifndef FCAIRSTATS_H
 #define FCAIRSTATS_H
-
+#ifdef __linux__
+#include "/home/z/src/test/s5/basestats.h"
+#else
 #include "C:\Source\QT\QTGITREPO\s5\basestats.h"
+#endif
 #include "statsEntry.h"
 
 class FcAirStats : public BaseStats

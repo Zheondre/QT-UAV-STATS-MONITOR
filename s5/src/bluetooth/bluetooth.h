@@ -12,8 +12,11 @@
 #include <QtBluetooth/qbluetoothsocket.h>
 #include <QBluetoothSocket>
 #include <QtCore/qobject.h>
-
+#ifdef __linux__
+#include "/home/z/src/test/s5/src/FcAir/fcairstats.h"
+#else
 #include "C:\Source\QT\QTGITREPO\s5\src\FcAir\fcairstats.h"
+#endif
 
 QT_FORWARD_DECLARE_CLASS(QBluetoothSocket)
 

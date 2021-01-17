@@ -1,4 +1,5 @@
-import QtQuick 2.15
+//import QtQuick 2.15
+import QtQuick 2.12
 import QtQuick.Controls 2.15
 import QtQuick.Layouts 1.1
 import QtQuick.Controls.Styles 1.4
@@ -9,8 +10,8 @@ Page {
     width: applicationWindow.width
     height: 480
 
-    signal buttonBtSignal();
-       objectName: "homePage"
+    signal buttonBtSignal
+    objectName: "homePage"
     // if mobile
     Rectangle {
         id: element
@@ -137,17 +138,10 @@ Page {
             anchors.right: parent.right
             anchors.rightMargin: -50
             anchors.leftMargin: -50
-            onClicked:{
-                 page.buttonBtSignal();
-            //emit fcStats.runbt()
+            onClicked: {
+                page.buttonBtSignal()
+                //emit fcStats.runbt()
             }
         }
     }
 }
-
-/*##^##
-Designer {
-    D{i:0;formeditorZoom:0.5}D{i:12}
-}
-##^##*/
-

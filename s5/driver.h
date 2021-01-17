@@ -4,7 +4,12 @@
 #include <QThread>
 #include <QObject>
 #include "basestats.h"
+#ifdef __linux__
+#include "/home/z/src/test/s5/src/bluetooth/bluetooth.h"
+#else
 #include "C:\Source\QT\QTGITREPO\s5\src\bluetooth\bluetooth.h"
+#endif
+
 #include <QTimer>
 //#include "btworker.h"
 
